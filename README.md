@@ -5,7 +5,8 @@ A draggable and resizable grid layout system for Vue 3, inspired by [react-grid-
 ## Features
 
 - Draggable grid items
-- Resizable grid items with multiple handle positions
+- Resizable grid items with **all 8 resize handles** enabled by default (N, S, E, W, NE, NW, SE, SW)
+- **Maximize/Minimize overlay** for fullscreen item viewing
 - Responsive breakpoints support
 - Vertical, horizontal, and no compaction modes
 - Collision detection and prevention
@@ -142,6 +143,91 @@ const onAdd = (payload: NewItemPayload) => {
 </template>
 ```
 
+### MaximizedOverlay
+
+A fullscreen overlay component for displaying grid items in maximized view.
+
+```vue
+<script setup>
+import { ref, computed } from "vue";
+import { GridLayout, MaximizedOverlay } from "vue3-grid-layout";
+import type { LayoutItem } from "vue3-grid-layout";
+
+const layout = ref([
+  { i: "a", x: 0, y: 0, w: 2, h: 2 },
+  { i: "b", x: 2, y: 0, w: 2, h: 2 }
+]);
+
+// Track which item is maximized
+const maximizedItemId = ref<string | null>(null);
+
+const maximizedItem = computed<LayoutItem | null>(() => {
+  if (!maximizedItemId.value) return null;
+  return layout.value.find(item => item.i === maximizedItemId.value) ?? null;
+});
+
+const onMaximize = (itemId: string) => {
+  maximizedItemId.value = itemId;
+};
+
+const onMinimize = () => {
+  maximizedItemId.value = null;
+};
+</script>
+
+<template>
+  <GridLayout v-model:layout="layout" :width="width">
+    <template v-for="item in layout" :key="item.i" #[item.i]="{ item: layoutItem }">
+      <div class="my-widget">
+        <button @click="onMaximize(layoutItem.i)">Maximize</button>
+        {{ layoutItem.i }}
+      </div>
+    </template>
+  </GridLayout>
+
+  <!-- Maximized Overlay -->
+  <MaximizedOverlay
+    v-if="maximizedItem"
+    :item="maximizedItem"
+    @minimize="onMinimize"
+  >
+    <template #title>
+      Widget {{ maximizedItem.i }}
+    </template>
+    <div class="maximized-content">
+      <!-- Your maximized widget content -->
+    </div>
+  </MaximizedOverlay>
+</template>
+```
+
+#### MaximizedOverlay Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `item` | `LayoutItem` | The layout item being maximized |
+
+#### MaximizedOverlay Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| `minimize` | - | Emitted when minimize button clicked or ESC key pressed |
+
+#### MaximizedOverlay Slots
+
+| Slot | Props | Description |
+|------|-------|-------------|
+| `default` | - | Content to display in the maximized view |
+| `title` | - | Custom title in the overlay header |
+
+#### MaximizedOverlay Features
+
+- **Fullscreen display**: Uses `100dvw` x `100dvh` for proper viewport coverage
+- **Teleport to body**: Renders outside the grid container for proper z-index stacking
+- **ESC key support**: Press Escape to minimize
+- **Auto-focus**: Overlay automatically receives focus for keyboard events
+- **Smooth animation**: Fade-in animation on open
+
 ## Layout Item Properties
 
 | Property | Type | Description |
@@ -189,21 +275,90 @@ const none = getCompactor(null);
 
 ## Resize Handles
 
-Available resize handle positions:
+By default, **all 8 resize handles are enabled** for maximum flexibility. Users can resize items from any edge or corner.
 
-- `s` - South (bottom)
-- `n` - North (top)
-- `e` - East (right)
-- `w` - West (left)
-- `se` - Southeast (bottom-right)
-- `sw` - Southwest (bottom-left)
-- `ne` - Northeast (top-right)
-- `nw` - Northwest (top-left)
+### Available Handle Positions
+
+| Handle | Position | Description |
+|--------|----------|-------------|
+| `n` | North | Top edge |
+| `s` | South | Bottom edge |
+| `e` | East | Right edge |
+| `w` | West | Left edge |
+| `ne` | Northeast | Top-right corner |
+| `nw` | Northwest | Top-left corner |
+| `se` | Southeast | Bottom-right corner |
+| `sw` | Southwest | Bottom-left corner |
+
+### Default Configuration
 
 ```typescript
+// All 8 handles enabled by default
 const resizeConfig = {
   enabled: true,
-  handles: ["se", "sw", "ne", "nw"] // Corner handles
+  handles: ["s", "w", "e", "n", "sw", "nw", "se", "ne"]
+};
+```
+
+### Custom Handle Configuration
+
+You can customize which handles are available:
+
+```typescript
+// Only corner handles
+const resizeConfig = {
+  enabled: true,
+  handles: ["se", "sw", "ne", "nw"]
+};
+
+// Only bottom-right (classic behavior)
+const resizeConfig = {
+  enabled: true,
+  handles: ["se"]
+};
+
+// Horizontal resize only
+const resizeConfig = {
+  enabled: true,
+  handles: ["e", "w"]
+};
+```
+
+### Per-Item Handle Override
+
+Individual items can override the global resize handles:
+
+```typescript
+const layout = [
+  { i: "a", x: 0, y: 0, w: 2, h: 2 }, // Uses global handles
+  { i: "b", x: 2, y: 0, w: 2, h: 2, resizeHandles: ["se"] }, // Only SE handle
+  { i: "c", x: 4, y: 0, w: 2, h: 2, isResizable: false } // No resize
+];
+```
+
+### Resize Events
+
+The GridLayout emits resize events with handle information:
+
+```vue
+<GridLayout
+  @resize-start="onResizeStart"
+  @resize="onResize"
+  @resize-stop="onResizeStop"
+>
+```
+
+```typescript
+const onResizeStart = (layout, oldItem, newItem, placeholder, event, node) => {
+  console.log("Resize started");
+};
+
+const onResize = (layout, oldItem, newItem, placeholder, event, node) => {
+  console.log("Resizing:", newItem.w, "x", newItem.h);
+};
+
+const onResizeStop = (layout, oldItem, newItem, placeholder, event, node) => {
+  console.log("Resize stopped");
 };
 ```
 
@@ -263,6 +418,16 @@ The library automatically injects required CSS styles. Grid items receive these 
 Full TypeScript support with exported types:
 
 ```typescript
+// Components
+import {
+  GridLayout,
+  GridItem,
+  ResponsiveGridLayout,
+  ComponentSelector,
+  MaximizedOverlay
+} from "vue3-grid-layout";
+
+// Types
 import type {
   Layout,
   LayoutItem,
@@ -273,7 +438,9 @@ import type {
   ResizeHandleAxis,
   Compactor,
   PositionStrategy,
-  LayoutConstraint
+  LayoutConstraint,
+  ComponentOption,
+  NewItemPayload
 } from "vue3-grid-layout";
 ```
 
