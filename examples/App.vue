@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { GridLayout, ComponentSelector, useContainerWidth } from "../src";
-import type { Layout, CompactType, ResizeHandleAxis } from "../src/core/types";
+import type { Layout, LayoutItem, CompactType, ResizeHandleAxis } from "../src/core/types";
 import type { ComponentOption, NewItemPayload } from "../src/components/ComponentSelector.vue";
 import { getCompactor } from "../src/core/compactors";
 import { getWidgetComponent } from "./components";
+import MaximizedOverlay from "./components/MaximizedOverlay.vue";
 import "./components/widget-styles.css";
 
 // Use the container width composable
@@ -167,6 +168,22 @@ const removeItem = () => {
 const getComponentId = (itemId: string): string | undefined => {
   return componentMap.value[itemId];
 };
+
+// Maximize state
+const maximizedItemId = ref<string | null>(null);
+
+const maximizedItem = computed<LayoutItem | null>(() => {
+  if (!maximizedItemId.value) return null;
+  return layout.value.find(item => item.i === maximizedItemId.value) ?? null;
+});
+
+const onMaximize = (itemId: string) => {
+  maximizedItemId.value = itemId;
+};
+
+const onMinimize = () => {
+  maximizedItemId.value = null;
+};
 </script>
 
 <template>
@@ -224,6 +241,7 @@ const getComponentId = (itemId: string): string | undefined => {
           <component
             :is="getWidgetComponent(getComponentId(layoutItem.i))"
             :item="layoutItem"
+            @maximize="onMaximize(layoutItem.i)"
           />
         </template>
       </GridLayout>
@@ -233,6 +251,22 @@ const getComponentId = (itemId: string): string | undefined => {
       <h3>Current Layout:</h3>
       <pre>{{ JSON.stringify(layout, null, 2) }}</pre>
     </div>
+
+    <!-- Maximized Overlay -->
+    <MaximizedOverlay
+      v-if="maximizedItem"
+      :item="maximizedItem"
+      @minimize="onMinimize"
+    >
+      <template #title>
+        {{ getComponentId(maximizedItem.i)?.toUpperCase() || 'Widget' }} - {{ maximizedItem.i }}
+      </template>
+      <component
+        :is="getWidgetComponent(getComponentId(maximizedItem.i))"
+        :item="maximizedItem"
+        class="maximized-widget"
+      />
+    </MaximizedOverlay>
   </div>
 </template>
 
@@ -334,5 +368,11 @@ const getComponentId = (itemId: string): string | undefined => {
 
 .component-badge.image {
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* Maximized widget fills the overlay content area */
+.maximized-widget {
+  height: 100%;
+  min-height: calc(100dvh - 100px);
 }
 </style>
