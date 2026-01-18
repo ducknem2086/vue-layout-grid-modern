@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { GridLayout, ComponentSelector, useContainerWidth } from "../src";
+import { GridLayout, ComponentSelector, MaximizedOverlay, useContainerWidth } from "../src";
 import type { Layout, LayoutItem, CompactType, ResizeHandleAxis } from "../src/core/types";
 import type { ComponentOption, NewItemPayload } from "../src/components/ComponentSelector.vue";
 import { getCompactor } from "../src/core/compactors";
 import { getWidgetComponent } from "./components";
-import MaximizedOverlay from "./components/MaximizedOverlay.vue";
 import "./components/widget-styles.css";
 
 // Use the container width composable

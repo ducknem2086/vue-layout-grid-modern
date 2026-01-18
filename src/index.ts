@@ -10,7 +10,8 @@ export {
   GridItem,
   GridLayout,
   ResponsiveGridLayout,
-  ComponentSelector
+  ComponentSelector,
+  MaximizedOverlay
 } from "./components";
 
 // ComponentSelector types

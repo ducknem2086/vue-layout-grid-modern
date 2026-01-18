@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { LayoutItem } from "../../src/core/types";
+import { onMounted, onUnmounted, ref } from "vue";
+import type { LayoutItem } from "../core/types";
 
 defineProps<{
   item: LayoutItem;
@@ -8,6 +9,8 @@ defineProps<{
 const emit = defineEmits<{
   (e: "minimize"): void;
 }>();
+
+const overlayRef = ref<HTMLDivElement | null>(null);
 
 const onMinimize = () => {
   emit("minimize");
@@ -19,22 +22,27 @@ const handleKeydown = (e: KeyboardEvent) => {
     onMinimize();
   }
 };
+
+// Auto-focus on mount for keyboard events
+onMounted(() => {
+  overlayRef.value?.focus();
+});
 </script>
 
 <template>
   <Teleport to="body">
     <div
-      class="maximized-overlay"
-      @keydown="handleKeydown"
-      tabindex="0"
       ref="overlayRef"
+      class="vue-grid-maximized-overlay"
+      tabindex="0"
+      @keydown="handleKeydown"
     >
-      <div class="maximized-header">
-        <span class="maximized-title">
+      <div class="vue-grid-maximized-header">
+        <span class="vue-grid-maximized-title">
           <slot name="title">Item {{ item.i }}</slot>
         </span>
         <button
-          class="action-btn minimize-btn"
+          class="vue-grid-maximize-btn vue-grid-minimize-btn"
           @click="onMinimize"
           title="Minimize (Esc)"
         >
@@ -46,15 +54,15 @@ const handleKeydown = (e: KeyboardEvent) => {
           </svg>
         </button>
       </div>
-      <div class="maximized-content">
+      <div class="vue-grid-maximized-content">
         <slot></slot>
       </div>
     </div>
   </Teleport>
 </template>
 
-<style scoped>
-.maximized-overlay {
+<style>
+.vue-grid-maximized-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -64,10 +72,10 @@ const handleKeydown = (e: KeyboardEvent) => {
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  animation: fadeIn 0.2s ease-out;
+  animation: vueGridFadeIn 0.2s ease-out;
 }
 
-@keyframes fadeIn {
+@keyframes vueGridFadeIn {
   from {
     opacity: 0;
     transform: scale(0.95);
@@ -78,7 +86,7 @@ const handleKeydown = (e: KeyboardEvent) => {
   }
 }
 
-.maximized-header {
+.vue-grid-maximized-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -87,13 +95,13 @@ const handleKeydown = (e: KeyboardEvent) => {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.maximized-title {
+.vue-grid-maximized-title {
   color: #fff;
   font-size: 16px;
   font-weight: 600;
 }
 
-.action-btn {
+.vue-grid-maximize-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -107,21 +115,21 @@ const handleKeydown = (e: KeyboardEvent) => {
   transition: all 0.2s ease;
 }
 
-.action-btn:hover {
+.vue-grid-maximize-btn:hover {
   background: rgba(255, 255, 255, 0.2);
   transform: scale(1.05);
 }
 
-.action-btn svg {
+.vue-grid-maximize-btn svg {
   width: 20px;
   height: 20px;
 }
 
-.minimize-btn:hover {
+.vue-grid-minimize-btn:hover {
   background: rgba(99, 102, 241, 0.6);
 }
 
-.maximized-content {
+.vue-grid-maximized-content {
   flex: 1;
   overflow: auto;
   padding: 20px;
