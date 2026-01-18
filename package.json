@@ -1,6 +1,6 @@
 {
   "name": "vue3-grid-layout",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "private": false,
   "description": "A draggable and resizable grid layout with responsive breakpoints for Vue 3",
   "type": "module",

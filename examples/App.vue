@@ -78,7 +78,7 @@ const componentMap = ref<Record<string, string>>({
 const layout = ref<GridItemWithComponent[]>([
   { i: "a", x: 0, y: 0, w: 2, h: 2, minW: 1, minH: 1, maxW: 4, maxH: 4 },
   { i: "b", x: 2, y: 0, w: 2, h: 3, minW: 2, minH: 2 },
-  { i: "c", x: 4, y: 0, w: 2, h: 2, resizeHandles: ["se", "sw", "ne", "nw"] },
+  { i: "c", x: 4, y: 0, w: 2, h: 2 },
   { i: "d", x: 0, y: 2, w: 2, h: 2, isResizable: false },
   { i: "e", x: 2, y: 3, w: 2, h: 2 },
   { i: "f", x: 4, y: 2, w: 2, h: 2 }
@@ -92,9 +92,9 @@ const compactType = ref<CompactType>("vertical");
 // Get compactor based on type
 const compactor = computed(() => getCompactor(compactType.value));
 
-// Resize handles options
+// Resize handles options (for demo toggle UI)
 const resizeHandlesOptions: ResizeHandleAxis[] = ["s", "w", "e", "n", "sw", "nw", "se", "ne"];
-const selectedHandles = ref<ResizeHandleAxis[]>(["s", "w", "e", "n", "sw", "nw", "se", "ne"]);
+const selectedHandles = ref<ResizeHandleAxis[]>(resizeHandlesOptions);
 
 // Grid config
 const gridConfig = computed(() => ({
@@ -187,7 +187,7 @@ const getComponentId = (itemId: string): string | undefined => {
       </select>
     </div>
 
-    <div class="controls">
+    <!-- <div class="controls">
       <span>Resize Handles:</span>
       <label v-for="handle in resizeHandlesOptions" :key="handle" class="checkbox-label">
         <input
@@ -197,7 +197,7 @@ const getComponentId = (itemId: string): string | undefined => {
         />
         {{ handle }}
       </label>
-    </div>
+    </div> -->
 
     <div class="legend">
       <span><strong>Components:</strong></span>

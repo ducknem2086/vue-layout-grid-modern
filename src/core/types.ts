@@ -528,7 +528,7 @@ export interface ResizeConfig {
 /** Default resize configuration */
 export const defaultResizeConfig: ResizeConfig = {
   enabled: true,
-  handles: ["se"]
+  handles: ["s", "w", "e", "n", "sw", "nw", "se", "ne"]
 };
 
 /**

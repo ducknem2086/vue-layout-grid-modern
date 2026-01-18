@@ -5,8 +5,13 @@ import TextBlock from "./TextBlock.vue";
 import ImageWidget from "./ImageWidget.vue";
 import DefaultWidget from "./DefaultWidget.vue";
 
+function getWidgetComponent(componentId?: string): Component {
+  if (!componentId) return DefaultWidget;
+  return componentRegistry[componentId] ?? DefaultWidget;
+}
+
 // Export individual components
-export { ChartWidget, DataTable, TextBlock, ImageWidget, DefaultWidget };
+export { getWidgetComponent, ChartWidget, DataTable, TextBlock, ImageWidget, DefaultWidget };
 
 // Component registry - maps componentId to Vue component
 export const componentRegistry: Record<string, Component> = {
@@ -17,7 +22,4 @@ export const componentRegistry: Record<string, Component> = {
 };
 
 // Get component by ID, returns DefaultWidget if not found
-export function getWidgetComponent(componentId?: string): Component {
-  if (!componentId) return DefaultWidget;
-  return componentRegistry[componentId] ?? DefaultWidget;
-}
+
