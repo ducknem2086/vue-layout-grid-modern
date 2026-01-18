@@ -1,0 +1,79 @@
+{
+  "name": "vue3-grid-layout",
+  "version": "1.0.3",
+  "private": false,
+  "description": "A draggable and resizable grid layout with responsive breakpoints for Vue 3",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./core": {
+      "import": {
+        "types": "./dist/core.d.ts",
+        "default": "./dist/core.js"
+      },
+      "require": {
+        "types": "./dist/core.d.ts",
+        "default": "./dist/core.cjs"
+      }
+    }
+  },
+  "sideEffects": [
+    "./dist/index.js",
+    "./dist/index.cjs"
+  ],
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build && node scripts/inject-css.js",
+    "build:lib": "vite build && node scripts/inject-css.js",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "typecheck": "vue-tsc --noEmit",
+    "lint": "eslint src --ext .vue,.ts,.tsx",
+    "fmt": "prettier --write ."
+  },
+  "peerDependencies": {
+    "vue": "^3.3.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/test-utils": "^2.4.6",
+    "clsx": "^2.1.1",
+    "fast-equals": "^4.0.3",
+    "tsup": "^8.5.0",
+    "typescript": "~5.6.0",
+    "vite": "^6.0.7",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^2.1.8",
+    "vue": "^3.5.13",
+    "vue-tsc": "^2.2.0"
+  },
+  "keywords": [
+    "vue3",
+    "vue",
+    "grid",
+    "layout",
+    "drag",
+    "draggable",
+    "resize",
+    "resizable",
+    "responsive"
+  ],
+  "author": "",
+  "license": "MIT"
+}

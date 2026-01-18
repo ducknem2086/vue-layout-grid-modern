@@ -1,0 +1,63 @@
+/* Shared widget styles */
+.widget {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.widget-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.1);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.widget-icon {
+  font-size: 14px;
+}
+
+.widget-title {
+  flex: 1;
+}
+
+.widget-body {
+  flex: 1;
+  overflow: hidden;
+}
+
+.widget-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.1);
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.widget-id {
+  font-weight: 600;
+}
+
+.widget-size {
+  font-family: monospace;
+}
+
+/* Default widget (no component assigned) */
+.default-widget {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+}
+
+.default-widget .widget-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  opacity: 0.7;
+}
